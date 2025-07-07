@@ -1,0 +1,64 @@
+class SLTree{
+    public:
+        vector<int> seg,lazy;
+        SLTree(int n){
+           
+            seg.resize(4*n+1,0);
+            lazy.resize(4*n+1,0);
+            
+        }
+        
+        void build(int idx,int low,int high,vector<int> &arr){
+            if(low==high){
+                seg[idx]=arr[low];
+                return;
+            }
+            int mid=(low+high)>>1;
+            build(2*idx+1,low,mid,arr);
+            build(2*idx+2,mid+1,high,arr);
+            seg[idx]=seg[2*idx+1]+seg[2*idx+2];
+            return;
+            
+        }
+        
+        long long query(int idx,int low,int high,int l,int r){
+            if(lazy[idx]!=0){
+                seg[idx]+=(high-low+1)*lazy[idx];
+                if(high!=low){
+                    lazy[2*idx+1]+=lazy[idx];
+                    lazy[2*idx+2]+=lazy[idx];
+                }
+            }
+            if(high<l || r<low) return 0;
+            if(l<=low && high<=r) return seg[idx];
+            int mid=(low+high)>>1;
+            long long left=query(2*idx+1,low,mid,l,r);
+            long long right=query(2*idx+2,mid+1,high,l,r);
+            return left+right;
+        }
+        
+        void Lupdate(int idx,int low,int high,int l, int r,int val){
+            //prev is there then update and propogate down
+            
+            if(high<l || r<low) return ;
+            if(l<=low && high<=r){
+                seg[idx]+=(high-low+1)*val;
+                if(high!=low){
+                    lazy[2*idx+1]+=val;
+                    lazy[2*idx+2]+=val;
+                }
+                return;
+                
+            }
+            int mid=(low+high)>>1;
+            Lupdate(2*idx+1,low,mid,l,r,val);
+            Lupdate(2*idx+2,mid+1,high,l,r,val);
+            seg[idx]=seg[2*idx+1]+seg[2*idx+2];
+            return;
+            
+            
+        }
+        
+        
+    
+};
