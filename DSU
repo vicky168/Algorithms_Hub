@@ -1,0 +1,63 @@
+class DisjointSet{
+    vector<int> rank,parent,size;
+    public:
+        DisjointSet(int n){
+           rank.resize(n+1,0);
+           parent.resize(n+1);
+           size.resize(n+1,1);
+           for(int i=0;i<=n;i++){
+               parent[i]=i;
+           }
+       }
+       //find parent method
+       int findUparent(int node){
+           if(node==parent[node]){
+               return node;
+           }
+           // tree compression
+           return parent[node]=findUparent(parent[node]);
+       }
+       //Union operation
+       void UnionByRank(int u,int v){
+           //find ultimte parent
+           int ulp_u=findUparent(u);
+           int ulp_v=findUparent(v);
+           //if they belong to same parent -> no change
+           if(ulp_v==ulp_u){
+               return;
+           }
+           //finding the rank
+           int ru=rank[ulp_u];
+           int rv=rank[ulp_v];
+           // do appropriate operations -> connect smaller rank to larger one
+           if(ru<rv){
+               parent[ulp_u]=ulp_v;
+           }else if(rv<ru){
+               parent[ulp_v]=ulp_u;
+           }else{
+               parent[ulp_v]=ulp_u;
+               rank[ulp_u]++;
+           }
+       }
+       void UnionBySize(int u,int v){
+           //find ultimte parent
+           int ulp_u=findUparent(u);
+           int ulp_v=findUparent(v);
+           //if they belong to same parent -> no change
+           if(ulp_v==ulp_u){
+               return;
+           }
+           //finding the rank
+           int su=size[ulp_u];
+           int sv=size[ulp_v];
+           // do appropriate operations -> connect smaller rank to larger one
+           if(su<sv){
+               parent[ulp_u]=ulp_v;
+               size[ulp_v]+=size[ulp_u];
+           }else{
+               parent[ulp_v]=ulp_u;
+               size[ulp_u]+=size[ulp_v];
+           }
+       }
+    
+};
