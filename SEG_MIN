@@ -1,0 +1,47 @@
+class STree{
+    public:
+        vector<int> seg;
+        STree(int n){
+            seg.resize(4*n+1);
+        }
+        //Build the seg STree -> O(n)
+        void build(int idx,int low,int high,vector<int> &arr){
+            if(low==high){
+                seg[idx]=arr[low];
+                return;
+            }
+            int mid=(low +high)>>1;
+            build(2*idx+1,low,mid,arr);
+            build(2*idx+2,mid+1,high,arr);
+            seg[idx]=min(seg[2*idx+1],seg[2*idx+2]);
+            
+        }
+        // querying 
+        int query(int idx,int low,int high,int l,int r){
+            // No overlap [low high] l r or l r[low high]
+            if(high<l || r<low) return INT_MAX;
+            
+            //complete overlap[l low high r]
+            if(l<=low && high<=r) return seg[idx];
+            
+            //partial overlap
+            int mid=(low+high)>>1;
+            int left=query(2*idx+1,low,mid,l,r);
+            int right=query(2*idx+2,mid+1,high,l,r);
+            return min(left,right);
+            
+        }
+        
+        // update opertion
+        void update(int idx,int low,int high,int tar,int val,vector<int> &arr){
+            if(low==high){
+                arr[tar]=val;
+                seg[idx]=arr[tar];
+                return;
+            }
+            int mid=(low+high)>>1;
+            if(tar<=mid) update(2*idx+1,low,mid,tar,val,arr);
+            else update(2*idx+2,mid+1,high,tar,val,arr);
+            seg[idx]=min(seg[2*idx+1],seg[2*idx+2]);
+        }
+};
